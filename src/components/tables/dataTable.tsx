@@ -17,6 +17,7 @@ export type ColunaTabelaDados<T> = {
 /**
  * Props da tabela generica de dados.
  * Use `placeholderFiltro` para customizar o texto do campo de busca.
+ * Use `usaClickLinha` e `aoClicarLinha` quando a tela precisar receber o id do registro selecionado.
  */
 interface TabelaDadosProps<T> {
     colunas: ColunaTabelaDados<T>[];
@@ -24,6 +25,8 @@ interface TabelaDadosProps<T> {
     carregando: boolean;
     mensagemSemDados: string;
     placeholderFiltro: string;
+    usaClickLinha?: boolean;
+    aoClicarLinha?: (id: string | number | null) => void;
 }
 
 /**
@@ -36,6 +39,8 @@ export function TabelaDados<T extends Record<string, unknown>>({
     carregando,
     mensagemSemDados,
     placeholderFiltro,
+    usaClickLinha = false,
+    aoClicarLinha,
 }: TabelaDadosProps<T>) {
     const [textoFiltro, setTextoFiltro] = useState("");
 
@@ -68,6 +73,16 @@ export function TabelaDados<T extends Record<string, unknown>>({
 
         const valor = item[coluna.chave as keyof T];
         return valor as ReactNode;
+    }
+
+    /**
+     * Retorna o id bruto do item quando existir.
+     * Use para callbacks de seleção sem expor o objeto inteiro da linha.
+     */
+    function obterIdLinha(item: T): string | number | null {
+        const id = item.id;
+
+        return typeof id === "string" || typeof id === "number" ? parseInt(String(id)) : null;
     }
 
     return (
@@ -129,8 +144,25 @@ export function TabelaDados<T extends Record<string, unknown>>({
                             </tr>
                         )}
 
-                        {!carregando && dadosFiltrados.map((item, indice) => (
-                            <tr key={String(item.id || indice)}>
+                        {!carregando && dadosFiltrados.map((item, indice) => {
+                            const linhaClicavel = usaClickLinha && Boolean(aoClicarLinha);
+
+                            return (
+                                <tr
+                                    key={String(item.id || indice)}
+                                    className={linhaClicavel ? "data-table-row-clickable" : undefined}
+                                    onClick={linhaClicavel ? () => aoClicarLinha?.(obterIdLinha(item)) : undefined}
+                                    tabIndex={linhaClicavel ? 0 : undefined}
+                                    role={linhaClicavel ? "button" : undefined}
+                                    onKeyDown={linhaClicavel
+                                        ? (event) => {
+                                            if (event.key === "Enter" || event.key === " ") {
+                                                event.preventDefault();
+                                                aoClicarLinha?.(obterIdLinha(item));
+                                            }
+                                        }
+                                        : undefined}
+                                >
                                 {colunas.map((coluna) => (
                                     <td
                                         key={`${String(item.id || indice)}-${String(coluna.chave)}`}
@@ -139,8 +171,9 @@ export function TabelaDados<T extends Record<string, unknown>>({
                                         {obterValorCelula(item, coluna)}
                                     </td>
                                 ))}
-                            </tr>
-                        ))}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

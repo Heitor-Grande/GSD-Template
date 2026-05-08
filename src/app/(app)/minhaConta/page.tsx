@@ -171,8 +171,12 @@ export default function PaginaMinhaConta() {
     }
 
     useEffect(() => {
-        carregarDadosMinhaConta();
-    }, []);
+        const carregamentoInicial = window.setTimeout(() => {
+            void carregarDadosMinhaConta();
+        }, 0);
+
+        return () => window.clearTimeout(carregamentoInicial);
+    }, [carregarDadosMinhaConta]);
 
     return (
         <div className="container-fluid">
