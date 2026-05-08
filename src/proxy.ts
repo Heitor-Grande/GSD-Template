@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { consultarBancoDados } from "@/services/database";
-import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
+import { obterPayloadJWT } from "@/utils/jwt";
 import { criarRespostaApi } from "@/utils/respostaApi";
 
+const NOME_COOKIE_SESSAO = "app_session";
 const ROTAS_PUBLICAS = ["/", "/api/auth/login"];
-
-type UsuarioSessao = {
-    id: number;
-};
 
 // Verifica se o caminho da requisição é uma rota pública.
 function rotaPublica(caminho: string): boolean {
@@ -15,39 +11,20 @@ function rotaPublica(caminho: string): boolean {
 }
 
 /**
- * Confirma se o usuário da sessão ainda existe e permanece ativo.
- * Use no proxy para impedir acesso com JWT válido de usuário desativado.
- */
-async function usuarioEstaAtivo(idUsuario: number): Promise<boolean> {
-    const resultado = await consultarBancoDados<UsuarioSessao>(
-        `
-            select
-                id
-            from usuarios
-            where id = $1
-              and ativo = true
-            limit 1
-        `,
-        [idUsuario]
-    );
-
-    return Boolean(resultado.rows[0]);
-}
-
-/**
  * Proxy global de autenticação.
- * Use para bloquear rotas protegidas quando o cookie de sessão não possuir JWT válido ou o usuário estiver inativo.
+ * Use para bloquear rotas protegidas quando o cookie de sessão não possuir JWT válido ou payload ativo.
  */
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const caminho = request.nextUrl.pathname;
 
     if (rotaPublica(caminho)) {
         return NextResponse.next();
     }
 
-    const idUsuario = obterIdUsuarioAutenticado(request);
+    const token = request.cookies.get(NOME_COOKIE_SESSAO)?.value;
+    const payload = token ? obterPayloadJWT(token) : null;
 
-    if (idUsuario && await usuarioEstaAtivo(idUsuario)) {
+    if (payload?.ativo === true) {
         return NextResponse.next();
     }
 

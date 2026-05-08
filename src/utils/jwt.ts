@@ -3,6 +3,7 @@ import type { JwtPayload, SignOptions } from "jsonwebtoken";
 
 type PayloadJWT = JwtPayload & {
     idUsuario: string;
+    ativo: boolean;
     dataLogin: string;
 };
 
@@ -10,13 +11,14 @@ type PayloadJWT = JwtPayload & {
  * Cria um JWT com id do usuário e data de login.
  * Use para gerar o valor do cookie de sessão da aplicação.
  */
-export function criarJWT(idUsuario: string): string {
+export function criarJWT(idUsuario: string, ativo: boolean): string {
     const segredo = obterSegredoJWT();
     const validade = (process.env.JWT_VALIDADE) as SignOptions["expiresIn"];
 
     return jwt.sign(
         {
             idUsuario: idUsuario,
+            ativo: ativo,
             dataLogin: new Date().toISOString(),
         },
         segredo,
@@ -42,7 +44,11 @@ export function obterPayloadJWT(token: string): PayloadJWT | null {
     try {
         const payload = jwt.verify(token, obterSegredoJWT()) as PayloadJWT;
 
-        if (typeof payload.idUsuario === "string" && typeof payload.dataLogin === "string") {
+        if (
+            typeof payload.idUsuario === "string"
+            && typeof payload.ativo === "boolean"
+            && typeof payload.dataLogin === "string"
+        ) {
             return payload;
         }
 

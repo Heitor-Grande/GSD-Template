@@ -69,18 +69,21 @@ export async function POST(request: NextRequest) {
 
         const usuario = resultadoUsuario.rows[0];
 
-        if (!usuario || !usuario.ativo || !validarHash(password, usuario.senha_hash, usuario.salt)) {
+        if (!usuario) {
+            return criarRespostaCredenciaisInvalidas("E-mail ou senha inválidos.");
+        }
 
-            if (!usuario.ativo) {
-                return criarRespostaApi(false, "Usuário inativo. Entre em contato com o suporte.", null, 403);
-            }
-            
+        if (!usuario.ativo) {
+            return criarRespostaApi(false, "Usuário inativo. Entre em contato com o suporte.", null, 403);
+        }
+
+        if (!validarHash(password, usuario.senha_hash, usuario.salt)) {
             return criarRespostaCredenciaisInvalidas("E-mail ou senha inválidos.");
         }
 
         const resposta = criarRespostaApi(true, "Login realizado com sucesso.", null);
 
-        resposta.cookies.set("app_session", criarJWT(usuario.id), {
+        resposta.cookies.set("app_session", criarJWT(usuario.id, usuario.ativo), {
             httpOnly: true,
             secure: process.env.AMBIENTE === "PROD",
             sameSite: "lax",
