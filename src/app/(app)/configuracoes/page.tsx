@@ -16,6 +16,7 @@ type DadosConfiguracaoAplicacao = {
     fantasiaEmpresa: string;
     cnpjEmpresa: string;
     emailSuporteContato: string;
+    contato: string;
     disponibilidade: OpcaoDisponibilidade | null;
 };
 
@@ -29,6 +30,7 @@ const estadoInicialConfiguracao: DadosConfiguracaoAplicacao = {
     fantasiaEmpresa: "",
     cnpjEmpresa: "",
     emailSuporteContato: "",
+    contato: "",
     disponibilidade: opcoesDisponibilidade[0],
 };
 
@@ -110,6 +112,20 @@ export default function PaginaConfiguracoes() {
                                     value={formulario.emailSuporteContato}
                                     placeholder="suporte@empresa.com"
                                     onChange={(event) => atualizarCampoFormulario("emailSuporteContato", event.target.value)}
+                                    disabled={false}
+                                    required
+                                    className="mb-0"
+                                />
+                            </div>
+
+                            <div className="col-md-6">
+                                <CampoTexto
+                                    id="configuracao-contato"
+                                    label="Contato"
+                                    type="text"
+                                    value={formulario.contato}
+                                    placeholder="Nome ou telefone de contato"
+                                    onChange={(event) => atualizarCampoFormulario("contato", event.target.value)}
                                     disabled={false}
                                     required
                                     className="mb-0"
