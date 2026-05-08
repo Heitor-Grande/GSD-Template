@@ -83,7 +83,7 @@ export default function PaginaMinhaConta() {
     }, []);
 
     const mapearUsuarioParaFormulario = useCallback((usuario: UsuarioMinhaContaApi): DadosMinhaConta => {
-        console.log("Mapeando usuário para formulário:", usuario);
+        
         return {
             id: String(usuario.id),
             nome: usuario.nome,

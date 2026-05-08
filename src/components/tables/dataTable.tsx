@@ -1,7 +1,8 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaFileExcel, FaSearch } from "react-icons/fa";
+import * as XLSX from "xlsx";
 
 const QUANTIDADE_REGISTROS_POR_PAGINA = 15;
 
@@ -20,6 +21,7 @@ export type ColunaTabelaDados<T> = {
  * Props da tabela generica de dados.
  * Use `placeholderFiltro` para customizar o texto do campo de busca.
  * Use `usaClickLinha` e `aoClicarLinha` quando a tela precisar receber o id do registro selecionado.
+ * Use `usaExcel` para exibir o botao de exportacao dos dados filtrados em .xlsx.
  */
 interface TabelaDadosProps<T> {
     colunas: ColunaTabelaDados<T>[];
@@ -29,6 +31,8 @@ interface TabelaDadosProps<T> {
     placeholderFiltro: string;
     usaClickLinha?: boolean;
     aoClicarLinha?: (id: string | number | null) => void;
+    usaExcel?: boolean;
+    nomeArquivoExcel?: string;
 }
 
 /**
@@ -43,6 +47,8 @@ export function TabelaDados<T extends Record<string, unknown>>({
     placeholderFiltro,
     usaClickLinha = false,
     aoClicarLinha,
+    usaExcel = false,
+    nomeArquivoExcel = "dados",
 }: TabelaDadosProps<T>) {
     const [textoFiltro, setTextoFiltro] = useState("");
     const [paginaAtual, setPaginaAtual] = useState(1);
@@ -112,6 +118,27 @@ export function TabelaDados<T extends Record<string, unknown>>({
         setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1));
     }
 
+    /**
+     * Exporta todos os dados filtrados da tabela para um arquivo Excel.
+     * Use apenas valores brutos das colunas para manter a planilha simples e reaproveitavel.
+     */
+    function exportarDadosExcel() {
+        const linhasExcel = dadosFiltrados.map((item) => {
+            return colunas.reduce<Record<string, unknown>>((linha, coluna) => {
+                const valor = item[coluna.chave as keyof T];
+
+                linha[coluna.titulo] = valor ?? "";
+                return linha;
+            }, {});
+        });
+
+        const planilha = XLSX.utils.json_to_sheet(linhasExcel);
+        const arquivo = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(arquivo, planilha, "Dados");
+        XLSX.writeFile(arquivo, `${nomeArquivoExcel}.xlsx`);
+    }
+
     return (
         <div className="data-table-card">
             <div className="data-table-toolbar">
@@ -128,6 +155,18 @@ export function TabelaDados<T extends Record<string, unknown>>({
                         disabled={carregando || dados.length === 0}
                     />
                 </div>
+
+                {usaExcel && (
+                    <button
+                        type="button"
+                        className=" ms-1 btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2"
+                        onClick={exportarDadosExcel}
+                        disabled={carregando || dadosFiltrados.length === 0}
+                    >
+                        <FaFileExcel />
+
+                    </button>
+                )}
             </div>
 
             <div className="data-table-scroll">

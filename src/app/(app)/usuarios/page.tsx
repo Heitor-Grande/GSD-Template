@@ -145,6 +145,7 @@ export default function PaginaUsuarios() {
                 carregando={carregando}
                 mensagemSemDados="Nenhum usuário cadastrado."
                 placeholderFiltro="Procurar por usuário"
+                usaExcel={true}
                 usaClickLinha={true}
                 aoClicarLinha={abrirCadastroUsuarioSelecionado}
             />
