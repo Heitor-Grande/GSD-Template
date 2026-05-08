@@ -39,6 +39,7 @@ export function Seletor({
             {label && <label htmlFor={id}>{label}</label>}
 
             <ReactSelect
+                instanceId={id}
                 inputId={id}
                 options={options}
                 value={value}

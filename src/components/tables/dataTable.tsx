@@ -3,6 +3,8 @@
 import { ReactNode, useMemo, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 
+const QUANTIDADE_REGISTROS_POR_PAGINA = 15;
+
 /**
  * Configuracao de uma coluna da tabela reutilizavel.
  * Use `renderizar` quando o valor precisar de formatacao visual customizada.
@@ -43,6 +45,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
     aoClicarLinha,
 }: TabelaDadosProps<T>) {
     const [textoFiltro, setTextoFiltro] = useState("");
+    const [paginaAtual, setPaginaAtual] = useState(1);
 
     /**
      * Filtra os registros em memoria usando os valores brutos das colunas configuradas.
@@ -61,6 +64,17 @@ export function TabelaDados<T extends Record<string, unknown>>({
             return String(valor ?? "").toLowerCase().includes(filtroNormalizado);
         }));
     }, [colunas, dados, textoFiltro]);
+
+    const totalPaginas = Math.max(1, Math.ceil(dadosFiltrados.length / QUANTIDADE_REGISTROS_POR_PAGINA));
+    const paginaAtualLimitada = Math.min(paginaAtual, totalPaginas);
+    const indiceInicialPagina = (paginaAtualLimitada - 1) * QUANTIDADE_REGISTROS_POR_PAGINA;
+
+    const dadosPaginados = useMemo(() => {
+        return dadosFiltrados.slice(
+            indiceInicialPagina,
+            indiceInicialPagina + QUANTIDADE_REGISTROS_POR_PAGINA
+        );
+    }, [dadosFiltrados, indiceInicialPagina]);
 
     /**
      * Retorna o conteudo que sera exibido na celula.
@@ -85,6 +99,19 @@ export function TabelaDados<T extends Record<string, unknown>>({
         return typeof id === "string" || typeof id === "number" ? parseInt(String(id)) : null;
     }
 
+    function atualizarTextoFiltro(valor: string) {
+        setTextoFiltro(valor);
+        setPaginaAtual(1);
+    }
+
+    function irParaPaginaAnterior() {
+        setPaginaAtual((pagina) => Math.max(1, pagina - 1));
+    }
+
+    function irParaProximaPagina() {
+        setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1));
+    }
+
     return (
         <div className="data-table-card">
             <div className="data-table-toolbar">
@@ -97,7 +124,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                         className="form-control"
                         placeholder={placeholderFiltro}
                         value={textoFiltro}
-                        onChange={(event) => setTextoFiltro(event.target.value)}
+                        onChange={(event) => atualizarTextoFiltro(event.target.value)}
                         disabled={carregando || dados.length === 0}
                     />
                 </div>
@@ -144,12 +171,13 @@ export function TabelaDados<T extends Record<string, unknown>>({
                             </tr>
                         )}
 
-                        {!carregando && dadosFiltrados.map((item, indice) => {
+                        {!carregando && dadosPaginados.map((item, indice) => {
                             const linhaClicavel = usaClickLinha && Boolean(aoClicarLinha);
+                            const indiceRegistro = indiceInicialPagina + indice;
 
                             return (
                                 <tr
-                                    key={String(item.id || indice)}
+                                    key={String(item.id || indiceRegistro)}
                                     className={linhaClicavel ? "data-table-row-clickable" : undefined}
                                     onClick={linhaClicavel ? () => aoClicarLinha?.(obterIdLinha(item)) : undefined}
                                     tabIndex={linhaClicavel ? 0 : undefined}
@@ -165,7 +193,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                                 >
                                 {colunas.map((coluna) => (
                                     <td
-                                        key={`${String(item.id || indice)}-${String(coluna.chave)}`}
+                                        key={`${String(item.id || indiceRegistro)}-${String(coluna.chave)}`}
                                         className={`text-${coluna.alinhamento || "start"}`}
                                     >
                                         {obterValorCelula(item, coluna)}
@@ -177,6 +205,33 @@ export function TabelaDados<T extends Record<string, unknown>>({
                     </tbody>
                 </table>
             </div>
+
+            {!carregando && dadosFiltrados.length > 0 && (
+                <div className="data-table-pagination">
+                    <span>
+                        Página {paginaAtualLimitada} de {totalPaginas}
+                    </span>
+
+                    <div className="btn-group btn-group-sm">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={irParaPaginaAnterior}
+                            disabled={paginaAtualLimitada === 1}
+                        >
+                            Anterior
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={irParaProximaPagina}
+                            disabled={paginaAtualLimitada === totalPaginas}
+                        >
+                            Próxima
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
