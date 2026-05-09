@@ -105,7 +105,7 @@ export async function verificarPermissaoAPI({
         return criarRespostaApi(false, "As permissões do perfil estão inválidas.", null, 403);
     }
 
-    if (!dadosPermissao.permissoes[recurso][acao]) {
+    if (dadosPermissao.permissoes[recurso]?.[acao] !== true) {
         return criarRespostaApi(false, "Você não possui permissão para executar esta ação.", null, 403);
     }
 

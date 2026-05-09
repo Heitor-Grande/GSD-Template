@@ -10,7 +10,7 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { FaExclamationTriangle, FaSave, FaTimes, FaTrash } from "react-icons/fa";
 
-export type RecursoPermissaoPerfil = "usuario" | "configuracao" | "perfil";
+export type RecursoPermissaoPerfil = "dashboard" | "usuario" | "configuracao" | "perfil";
 
 export type PermissaoPerfil = {
     criar: boolean;
@@ -42,6 +42,7 @@ interface ModalCadastroPerfilProps {
 }
 
 const recursosPermissao: Array<{ chave: RecursoPermissaoPerfil; titulo: string }> = [
+    { chave: "dashboard", titulo: "Dashboard" },
     { chave: "usuario", titulo: "Usuário" },
     { chave: "configuracao", titulo: "Configuração" },
     { chave: "perfil", titulo: "Perfil" },
@@ -55,6 +56,12 @@ const acoesPermissao: Array<{ chave: keyof PermissaoPerfil; titulo: string }> = 
 ];
 
 const permissoesIniciais: Record<RecursoPermissaoPerfil, PermissaoPerfil> = {
+    dashboard: {
+        criar: false,
+        deletar: false,
+        atualizar: false,
+        visualizar: false,
+    },
     usuario: {
         criar: false,
         deletar: false,
@@ -89,10 +96,34 @@ const estadoInicialPerfil: DadosPerfil = {
  */
 function clonarPermissoes(permissoes: Record<RecursoPermissaoPerfil, PermissaoPerfil>) {
     return {
+        dashboard: { ...permissoes.dashboard },
         usuario: { ...permissoes.usuario },
         configuracao: { ...permissoes.configuracao },
         perfil: { ...permissoes.perfil },
     };
+}
+
+function normalizarPermissoesPerfil(permissoes: Partial<Record<RecursoPermissaoPerfil, PermissaoPerfil>>) {
+    return clonarPermissoes({
+        ...permissoesIniciais,
+        ...permissoes,
+        dashboard: {
+            ...permissoesIniciais.dashboard,
+            ...permissoes.dashboard,
+        },
+        usuario: {
+            ...permissoesIniciais.usuario,
+            ...permissoes.usuario,
+        },
+        configuracao: {
+            ...permissoesIniciais.configuracao,
+            ...permissoes.configuracao,
+        },
+        perfil: {
+            ...permissoesIniciais.perfil,
+            ...permissoes.perfil,
+        },
+    });
 }
 
 function mapearPerfilParaFormulario(perfil: PerfilDetalhadoApi): DadosPerfil {
@@ -101,7 +132,7 @@ function mapearPerfilParaFormulario(perfil: PerfilDetalhadoApi): DadosPerfil {
         nome: perfil.nome,
         descricao: perfil.descricao || "",
         ativo: perfil.ativo,
-        permissoes: clonarPermissoes(perfil.permissoes),
+        permissoes: normalizarPermissoesPerfil(perfil.permissoes),
     };
 }
 

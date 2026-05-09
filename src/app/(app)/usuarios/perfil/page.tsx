@@ -1,6 +1,7 @@
 "use client";
 
 import { Botao } from "@/components/inputs/button";
+import { ModalCarregamento } from "@/components/modals/loading";
 import ModalResposta from "@/components/modals/responseModal";
 import { ColunaTabelaDados, TabelaDados } from "@/components/tables/dataTable";
 import { requisitarAPI } from "@/utils/api";
@@ -29,7 +30,7 @@ function contarPermissoesAtivas(perfil: DadosPerfil): number {
  */
 export default function PaginaPerfis() {
     const [perfis, setPerfis] = useState<PerfilTabela[]>([]);
-    const [carregando, setCarregando] = useState(true);
+    const [carregando, setCarregando] = useState(false);
     const [mensagemResposta, setMensagemResposta] = useState("");
     const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
     const [idPerfilSelecionado, setIdPerfilSelecionado] = useState<number | null>(null);
@@ -171,6 +172,11 @@ export default function PaginaPerfis() {
                 isOpen={Boolean(mensagemResposta)}
                 message={mensagemResposta}
                 onClose={() => setMensagemResposta("")}
+            />
+
+            <ModalCarregamento
+                show={carregando}
+                text="Carregando perfis..."
             />
         </div>
     );

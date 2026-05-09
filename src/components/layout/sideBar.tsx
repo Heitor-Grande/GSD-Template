@@ -28,7 +28,7 @@ type MenuItem = {
     children?: MenuItem[];
 };
 
-type RecursoPermissao = "usuario" | "configuracao" | "perfil";
+type RecursoPermissao = "dashboard" | "usuario" | "configuracao" | "perfil";
 type AcaoPermissao = "visualizar" | "criar" | "atualizar" | "deletar";
 type PermissoesPerfil = Record<RecursoPermissao, Record<AcaoPermissao, boolean>>;
 
@@ -113,9 +113,10 @@ export default function BarraLateral() {
 
     const versaoApp = "1.0.0";
     const iniciaisEmpresa = fantasiaEmpresa.trim().slice(0, 2).toUpperCase() || "TP";
-    const podeVisualizarUsuario = Boolean(permissoesPerfil?.usuario.visualizar);
-    const podeVisualizarPerfil = Boolean(permissoesPerfil?.perfil.visualizar);
-    const podeVisualizarConfiguracao = Boolean(permissoesPerfil?.configuracao.visualizar);
+    const podeVisualizarDashboard = Boolean(permissoesPerfil?.dashboard?.visualizar);
+    const podeVisualizarUsuario = Boolean(permissoesPerfil?.usuario?.visualizar);
+    const podeVisualizarPerfil = Boolean(permissoesPerfil?.perfil?.visualizar);
+    const podeVisualizarConfiguracao = Boolean(permissoesPerfil?.configuracao?.visualizar);
 
     const menusUsuario: MenuItem[] = [
         ...(podeVisualizarUsuario
@@ -127,7 +128,9 @@ export default function BarraLateral() {
     ];
 
     const menus: MenuItem[] = [
-        { label: "Dashboard", href: "/menuPrincipal", icon: <FaHome /> },
+        ...(podeVisualizarDashboard
+            ? [{ label: "Dashboard", href: "/menuPrincipal", icon: <FaHome /> }]
+            : []),
         ...(menusUsuario.length > 0
             ? [{
                 label: "Usuários",
