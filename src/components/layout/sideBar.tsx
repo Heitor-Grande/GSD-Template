@@ -105,6 +105,7 @@ export default function BarraLateral() {
     const [fantasiaEmpresa, setFantasiaEmpresa] = useState("Template");
 
     const versaoApp = "1.0.0";
+    const iniciaisEmpresa = fantasiaEmpresa.trim().slice(0, 2).toUpperCase() || "TP";
 
     const menus: MenuItem[] = [
         { label: "Dashboard", href: "/menuPrincipal", icon: <FaHome /> },
@@ -215,7 +216,7 @@ export default function BarraLateral() {
             <aside className={`sidebar-shell ${aberta ? "open" : ""}`}>
                 <div className="sidebar-header">
                     <div className="sidebar-brand">
-                        <span className="sidebar-brand-mark">T</span>
+                        <span className="sidebar-brand-mark">{iniciaisEmpresa}</span>
                         <div>
                             <strong>{fantasiaEmpresa}</strong>
                             <small className="text-center">Desenvolvido por Grande, Soluções Digitais.</small>
