@@ -18,12 +18,14 @@ type UsuarioLogin = {
     email: string;
     senha_hash: string;
     salt: string;
+    perfil_id: number | null;
+    perfil_ativo: boolean | null;
     ativo: boolean;
 };
 
 /**
  * Retorna a validade do cookie de sessão em segundos.
- * Use a variavel MAXAGE_COOKIE para manter o cookie alinhado com a validade do JWT.
+ * Use a variável MAXAGE_COOKIE para manter o cookie alinhado com a validade do JWT.
  */
 function obterMaxAgeCookieSessao(): number {
     const maxAgeCookie = Number(process.env.MAXAGE_COOKIE);
@@ -48,8 +50,8 @@ export async function POST(request: NextRequest) {
         const respostaRateLimit = verificarRateLimitPorIp({
             request: request,
             identificador: "login",
-            limite: 5, // Limite de 5 tentativas
-            janelaMs: 15 * 60 * 1000, // Janela de 15 minutos
+            limite: 5,
+            janelaMs: 15 * 60 * 1000,
         });
 
         if (respostaRateLimit) {
@@ -71,10 +73,23 @@ export async function POST(request: NextRequest) {
                     email,
                     senha_hash,
                     salt,
+                    perfil_id,
+                    perfil_ativo,
                     ativo
-                from usuarios
-                where lower(email) = $1
-                limit 1
+                from (
+                    select
+                        u.id,
+                        u.email,
+                        u.senha_hash,
+                        u.salt,
+                        u.perfil_id,
+                        p.ativo as perfil_ativo,
+                        u.ativo
+                    from usuarios u
+                    left join perfil p on p.id = u.perfil_id
+                    where lower(u.email) = $1
+                    limit 1
+                ) usuario
             `,
             [email]
         );
@@ -87,6 +102,18 @@ export async function POST(request: NextRequest) {
 
         if (!usuario.ativo) {
             return criarRespostaApi(false, "Usuário inativo. Entre em contato com o suporte.", null, 403);
+        }
+
+        if (!usuario.perfil_id) {
+            return criarRespostaApi(false, "Usuário não possuí perfil de permissão vinculado.", null, 403);
+        }
+
+        if (usuario.perfil_ativo === null) {
+            return criarRespostaApi(false, "O perfil vinculado ao usuário não existe.", null, 403);
+        }
+
+        if (!usuario.perfil_ativo) {
+            return criarRespostaApi(false, "O perfil vinculado ao usuário está Inativo.", null, 403);
         }
 
         if (!validarHash(password, usuario.senha_hash, usuario.salt)) {
