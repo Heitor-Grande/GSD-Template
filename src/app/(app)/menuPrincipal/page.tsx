@@ -4,9 +4,9 @@
  */
 export default function PaginaMenuPrincipal() {
     return (
-        <div className="container-fluid">
-            <h1 className="h3 fw-bold">Menu principal</h1>
-            <p className="text-muted mb-0">
+        <div className="w-full">
+            <h1 className="text-2xl font-bold text-slate-900">Menu principal</h1>
+            <p className="mb-0 mt-2 text-slate-500">
                 Selecione uma opção no menu lateral para iniciar.
             </p>
         </div>

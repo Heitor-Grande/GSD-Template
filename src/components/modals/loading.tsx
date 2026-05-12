@@ -22,15 +22,15 @@ export function ModalCarregamento({
             backdrop="static"
             keyboard={false}
             size="sm"
-            contentClassName="loading-modal"
+            contentClassName="loading-modal border-0 rounded-xl shadow-2xl"
         >
-            <Modal.Body className="loading-modal-body">
-                <div className="loading-modal-spinner">
-                    <span className="spinner-border" role="status" aria-hidden="true" />
+            <Modal.Body className="px-6 py-8 text-center">
+                <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <span className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" role="status" aria-hidden="true" />
                 </div>
 
-                <p className="loading-modal-title">Aguarde</p>
-                <p className="loading-modal-text">{text}</p>
+                <p className="mb-1 text-lg font-bold text-slate-800">Aguarde</p>
+                <p className="mb-0 text-sm leading-relaxed text-slate-500">{text}</p>
             </Modal.Body>
         </Modal>
     );

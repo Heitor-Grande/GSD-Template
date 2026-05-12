@@ -174,13 +174,13 @@ export default function PaginaConfiguracoes() {
     }, [carregarConfiguracoesAplicacao]);
 
     return (
-        <div className="container-fluid">
-            <div className="page-header">
-                <div className="card w-100">
-                    <div className="card-body">
-                        <h5 className="">Configurações</h5>
-                        <hr />
-                        <p className="text-muted mb-0">
+        <div className="w-full">
+            <div className="mb-6">
+                <div className="w-full rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div className="p-6">
+                        <h5 className="text-lg font-bold text-slate-900">Configurações</h5>
+                        <hr className="my-4 border-slate-200" />
+                        <p className="mb-0 text-slate-500">
                             Controle os dados principais da empresa, a disponibilidade da aplicação e o envio de e-mails.
                         </p>
                     </div>
@@ -188,12 +188,12 @@ export default function PaginaConfiguracoes() {
             </div>
 
             <form onSubmit={salvarConfiguracoesAplicacao}>
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h5 className="mb-0">Dados da aplicação</h5>
-                        <hr />
-                        <div className="row g-3">
-                            <div className="col-md-6">
+                <div className="mb-4 rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div className="p-6">
+                        <h5 className="mb-0 text-lg font-bold text-slate-900">Dados da aplicação</h5>
+                        <hr className="my-4 border-slate-200" />
+                        <div className="grid gap-4 md:grid-cols-12">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-fantasia-empresa"
                                     label="Fantasia da empresa"
@@ -207,7 +207,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-cnpj-empresa"
                                     label="CNPJ da empresa"
@@ -221,7 +221,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-email-suporte-contato"
                                     label="E-mail suporte/contato"
@@ -235,7 +235,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-contato"
                                     label="Contato"
@@ -249,7 +249,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <Seletor
                                     id="configuracao-disponibilidade"
                                     label="Disponibilidade"
@@ -265,12 +265,12 @@ export default function PaginaConfiguracoes() {
                         </div>
                     </div>
 
-                    <div className="card-body">
-                        <h5 className="mb-0">Envio de e-mails</h5>
-                        <hr />
+                    <div className="p-6 pt-0">
+                        <h5 className="mb-0 text-lg font-bold text-slate-900">Envio de e-mails</h5>
+                        <hr className="my-4 border-slate-200" />
 
-                        <div className="row g-3">
-                            <div className="col-md-8">
+                        <div className="grid gap-4 md:grid-cols-12">
+                            <div className="md:col-span-8">
                                 <CampoTexto
                                     id="configuracao-smtp-host"
                                     label="Servidor SMTP"
@@ -284,7 +284,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-4">
+                            <div className="md:col-span-4">
                                 <CampoTexto
                                     id="configuracao-smtp-port"
                                     label="Porta SMTP"
@@ -298,7 +298,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-smtp-user"
                                     label="Usuário SMTP"
@@ -312,7 +312,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="configuracao-smtp-pass"
                                     label="Senha SMTP"
@@ -326,7 +326,7 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
 
-                            <div className="col-12">
+                            <div className="md:col-span-12">
                                 <CampoTexto
                                     id="configuracao-smtp-from"
                                     label="Remetente"
@@ -340,8 +340,8 @@ export default function PaginaConfiguracoes() {
                                 />
                             </div>
                         </div>
-                        <hr />
-                        <div className="text-end">
+                        <hr className="my-4 border-slate-200" />
+                        <div className="flex justify-end">
                             <Botao
                                 size="sm"
                                 label="Salvar configurações"

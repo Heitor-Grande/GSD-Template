@@ -3,7 +3,6 @@
 import { Botao } from "@/components/inputs/button";
 import { ModalCarregamento } from "@/components/modals/loading";
 import { requisitarAPI } from "@/utils/api";
-import { Nav } from "react-bootstrap";
 import Link from "next/link";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -57,36 +56,36 @@ function ItemMenuLateral({
 
     if (!possuiFilhos) {
         return (
-            <Nav.Item>
+            <div>
                 <Link
                     href={item.href || "#"}
-                    className={`sidebar-link ${estaAtivo ? "active" : ""}`}
+                    className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-300 no-underline transition hover:bg-white/10 hover:text-white ${estaAtivo ? "bg-white/10 text-white" : ""}`}
                     onClick={aoNavegar}
                 >
-                    <span className="sidebar-link-icon">{item.icon}</span>
+                    <span className="inline-flex w-5 items-center justify-center text-sky-400">{item.icon}</span>
                     <span>{item.label}</span>
                 </Link>
-            </Nav.Item>
+            </div>
         );
     }
 
     return (
-        <div className="sidebar-group">
+        <div>
             <Botao
                 size="sm"
                 label={item.label}
-                icon={<span className="sidebar-link-icon">{item.icon}</span>}
+                icon={<span className="inline-flex w-5 items-center justify-center text-sky-400">{item.icon}</span>}
                 iconRight={aberto ? <FaChevronDown /> : <FaChevronRight />}
                 type="button"
                 variant="link"
-                className={`sidebar-link sidebar-link-button ${aberto ? "active" : ""}`}
+                className={`min-h-11 w-full justify-start border-transparent px-3 py-2.5 text-left text-sm text-slate-300 hover:bg-white/10 hover:text-white ${aberto ? "bg-white/10 text-white" : ""}`}
                 onClick={() => setAberto(!aberto)}
                 disabled={false}
                 loading={false}
             />
 
             {aberto && (
-                <Nav className="sidebar-submenu">
+                <div className="ml-7 mt-1 flex flex-col gap-1 border-l border-white/10 pl-3">
                     {item.children!.map((child) => (
                         <ItemMenuLateral
                             key={`${item.label}-${child.label}`}
@@ -94,7 +93,7 @@ function ItemMenuLateral({
                             aoNavegar={aoNavegar}
                         />
                     ))}
-                </Nav>
+                </div>
             )}
         </div>
     );
@@ -206,20 +205,20 @@ export default function BarraLateral() {
 
     return (
         <>
-            <nav className="sidebar-topbar">
+            <nav className="fixed inset-x-0 top-0 z-[1030] flex h-16 items-center gap-3 border-b border-slate-200 bg-white/90 px-4 backdrop-blur">
                 <Botao
                     size="sm"
                     icon={<FaBars />}
                     type="button"
                     variant="link"
-                    className="sidebar-icon-button"
+                    className="h-10 w-10 border-slate-200 bg-white p-0 text-slate-900 hover:bg-slate-50"
                     onClick={abrirBarraLateral}
                     disabled={false}
                     loading={false}
-                    ariaLabel="Abrir menu"
+                    ariaLabel={aberta ? "Menu aberto" : "Abrir menu"}
                 />
 
-                <span className="sidebar-topbar-brand">{fantasiaEmpresa}</span>
+                <span className="font-bold text-slate-900">{fantasiaEmpresa}</span>
             </nav>
 
             {aberta && (
@@ -227,7 +226,7 @@ export default function BarraLateral() {
                     size="sm"
                     type="button"
                     variant="link"
-                    className="sidebar-overlay"
+                    className="fixed inset-0 z-[1040] h-full w-full rounded-none border-0 bg-slate-950/60 p-0 hover:bg-slate-950/60"
                     onClick={fecharBarraLateral}
                     disabled={false}
                     loading={false}
@@ -235,13 +234,12 @@ export default function BarraLateral() {
                 />
             )}
 
-            <aside className={`sidebar-shell ${aberta ? "open" : ""}`}>
-                <div className="sidebar-header">
-                    <div className="sidebar-brand">
-                        <span className="sidebar-brand-mark">{iniciaisEmpresa}</span>
+            <aside className={`fixed inset-y-0 left-0 z-[1050] flex w-[min(18rem,calc(100vw-2rem))] flex-col bg-slate-950 p-4 text-slate-100 shadow-2xl shadow-slate-950/30 transition-transform duration-200 ${aberta ? "translate-x-0" : "-translate-x-[105%]"}`}>
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div className="flex items-center gap-3">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-700 font-extrabold text-white">{iniciaisEmpresa}</span>
                         <div>
                             <strong>{fantasiaEmpresa}</strong>
-                            <small className="text-center">Desenvolvido por Grande, Soluções Digitais.</small>
                         </div>
                     </div>
 
@@ -250,7 +248,7 @@ export default function BarraLateral() {
                         icon={<FaTimes />}
                         type="button"
                         variant="link"
-                        className="sidebar-icon-button sidebar-close-button"
+                        className="h-10 w-10 border-white/10 bg-white/5 p-0 text-slate-100 hover:bg-white/10"
                         onClick={fecharBarraLateral}
                         disabled={false}
                         loading={false}
@@ -258,7 +256,7 @@ export default function BarraLateral() {
                     />
                 </div>
 
-                <Nav className="sidebar-nav">
+                <nav className="flex flex-col gap-1 py-4">
                     {menus.map((item) => (
                         <ItemMenuLateral
                             key={item.label}
@@ -266,16 +264,16 @@ export default function BarraLateral() {
                             aoNavegar={fecharBarraLateral}
                         />
                     ))}
-                </Nav>
+                </nav>
 
-                <div className="sidebar-footer">
+                <div className="mt-auto flex flex-col gap-3 border-t border-white/10 pt-4 text-sm text-slate-400">
                     <Botao
                         size="sm"
                         label="Minha conta"
-                        icon={<span className="sidebar-link-icon"><FaUserCircle /></span>}
+                        icon={<span className="inline-flex w-5 items-center justify-center text-sky-400"><FaUserCircle /></span>}
                         type="button"
                         variant="link"
-                        className="sidebar-link sidebar-link-button"
+                        className="min-h-10 w-full justify-start border-transparent px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white"
                         onClick={() => {
                             fecharBarraLateral();
                             window.location.assign("/minhaConta");
@@ -287,18 +285,18 @@ export default function BarraLateral() {
                     <Botao
                         size="sm"
                         label="Sair"
-                        icon={<span className="sidebar-link-icon"><FaSignOutAlt /></span>}
+                        icon={<span className="inline-flex w-5 items-center justify-center text-sky-400"><FaSignOutAlt /></span>}
                         type="button"
                         variant="link"
-                        className="sidebar-link sidebar-link-button"
+                        className="min-h-10 w-full justify-start border-transparent px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white"
                         onClick={realizarLogoffUsuario}
                         disabled={carregandoLogout}
                         loading={false}
                     />
 
-                    <div className="sidebar-footer-version">
+                    <div className="flex items-center justify-between">
                         <span>Versão</span>
-                        <strong>v{versaoApp}</strong>
+                        <strong className="text-slate-100">v{versaoApp}</strong>
                     </div>
                 </div>
             </aside>

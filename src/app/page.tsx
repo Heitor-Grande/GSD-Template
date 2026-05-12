@@ -59,54 +59,54 @@ export default function PaginaInicial() {
   }
 
   return (
-    <div className="login-landing">
-      <section className="login-hero">
-        <div className="container">
-          <nav className="login-nav">
-            <div className="login-brand">
-              <span className="login-brand-icon">
+    <div className="min-h-screen bg-[#f4f7fb]">
+      <section className="flex min-h-[calc(100vh-3rem)] items-center bg-[radial-gradient(circle_at_85%_20%,rgba(34,211,238,0.24),transparent_28%),linear-gradient(135deg,rgba(13,33,64,0.97),rgba(50,38,112,0.92))] px-4 py-8 lg:py-16">
+        <div className="mx-auto w-full max-w-6xl">
+          <nav className="mb-12 flex items-center justify-between lg:mb-16">
+            <div className="inline-flex items-center gap-3 text-lg font-bold text-white">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
                 <FaRocket />
               </span>
               <span>Template App</span>
             </div>
 
-            <a href="#login" className="btn btn-outline-light btn-sm">
+            <a href="#login" className="rounded-lg border border-white/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
               Acessar
             </a>
           </nav>
 
-          <div className="row align-items-center g-5 login-hero-content">
-            <div className="col-lg-7">
-              <span className="badge text-bg-light mb-3">
+          <div className="grid items-center gap-10 lg:min-h-[34rem] lg:grid-cols-[1.35fr_0.9fr]">
+            <div>
+              <span className="mb-4 inline-flex rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-800 shadow-sm">
                 Base pronta para novos projetos
               </span>
 
-              <h1 className="display-5 fw-bold text-white mb-3">
+              <h1 className="mb-4 max-w-3xl text-4xl font-extrabold leading-tight text-white sm:text-5xl">
                 Comece sua próxima aplicação com uma estrutura pronta para evoluir.
               </h1>
 
-              <p className="lead text-white-50 mb-4">
+              <p className="mb-6 max-w-2xl text-lg leading-relaxed text-white/70">
                 Um template com componentes, modais, hooks e padrões essenciais para acelerar o desenvolvimento de sistemas web.
               </p>
 
-              <div className="d-flex flex-wrap gap-3">
-                <a href="#login" className="btn btn-primary btn-lg">
-                  Entrar agora <FaArrowRight className="ms-2" />
+              <div className="flex flex-wrap gap-3">
+                <a href="#login" className="inline-flex min-h-12 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-700">
+                  Entrar agora <FaArrowRight className="ml-2" />
                 </a>
-                <a href="#recursos" className="btn btn-outline-light btn-lg">
+                <a href="#recursos" className="inline-flex min-h-12 items-center rounded-lg border border-white/70 px-5 py-3 font-semibold text-white transition hover:bg-white/10">
                   Ver recursos
                 </a>
               </div>
             </div>
 
-            <div className="col-lg-5" id="login">
-              <div className="login-card">
-                <div className="mb-4">
-                  <p className="text-muted small text-uppercase fw-semibold mb-1">
+            <div id="login">
+              <div className="rounded-xl border border-white/20 bg-white p-6 shadow-2xl shadow-slate-950/30 sm:p-8">
+                <div className="mb-6">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
                     Área segura
                   </p>
-                  <h2 className="h3 fw-bold mb-1">Acesse sua conta</h2>
-                  <p className="text-muted mb-0">
+                  <h2 className="mb-1 text-2xl font-extrabold text-slate-900">Acesse sua conta</h2>
+                  <p className="mb-0 text-slate-500">
                     Entre para continuar usando a plataforma.
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export default function PaginaInicial() {
                     }}
                     disabled={loading}
                     required
-                    className="mb-3"
+                    className="mb-4"
                   />
 
                   <CampoTexto
@@ -142,10 +142,10 @@ export default function PaginaInicial() {
                     className="mb-2"
                   />
 
-                  <div className="d-flex justify-content-end mb-3">
+                  <div className="mb-4 flex justify-end">
                     <button
                       type="button"
-                      className="btn btn-link login-link p-0"
+                      className="border-0 bg-transparent p-0 text-sm font-semibold text-blue-700 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
                       onClick={() => setModalRecSenhaAberto(true)}
                       disabled={loading}
                     >
@@ -161,7 +161,7 @@ export default function PaginaInicial() {
                     loading={false}
                     variant="primary"
                     type="submit"
-                    className="w-100"
+                    className="w-full"
                   />
                 </form>
               </div>
@@ -170,34 +170,34 @@ export default function PaginaInicial() {
         </div>
       </section>
 
-      <section className="login-section" id="recursos">
-        <div className="container">
-          <div className="row g-4 align-items-stretch">
-            <div className="col-md-4">
-              <div className="feature-card h-100">
-                <FaCheckCircle className="feature-icon text-primary" />
-                <h3 className="h5 fw-bold mt-3">Componentes reutilizáveis</h3>
-                <p className="text-muted mb-0">
+      <section className="px-4 py-16" id="recursos">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid items-stretch gap-4 md:grid-cols-3">
+            <div>
+              <div className="h-full rounded-xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+                <FaCheckCircle className="h-8 w-8 text-blue-600" />
+                <h3 className="mt-4 text-lg font-bold text-slate-900">Componentes reutilizáveis</h3>
+                <p className="mb-0 mt-2 text-slate-500">
                   Inputs, botões e modais prontos para padronizar novas telas.
                 </p>
               </div>
             </div>
 
-            <div className="col-md-4">
-              <div className="feature-card h-100">
-                <FaShieldAlt className="feature-icon text-success" />
-                <h3 className="h5 fw-bold mt-3">Base consistente</h3>
-                <p className="text-muted mb-0">
+            <div>
+              <div className="h-full rounded-xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+                <FaShieldAlt className="h-8 w-8 text-emerald-600" />
+                <h3 className="mt-4 text-lg font-bold text-slate-900">Base consistente</h3>
+                <p className="mb-0 mt-2 text-slate-500">
                   Organização pensada para services, hooks e utils compartilhados.
                 </p>
               </div>
             </div>
 
-            <div className="col-md-4">
-              <div className="feature-card h-100">
-                <FaChartLine className="feature-icon text-danger" />
-                <h3 className="h5 fw-bold mt-3">Pronto para crescer</h3>
-                <p className="text-muted mb-0">
+            <div>
+              <div className="h-full rounded-xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+                <FaChartLine className="h-8 w-8 text-purple-600" />
+                <h3 className="mt-4 text-lg font-bold text-slate-900">Pronto para crescer</h3>
+                <p className="mb-0 mt-2 text-slate-500">
                   Estrutura simples para evoluir de protótipo para produto.
                 </p>
               </div>

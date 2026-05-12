@@ -33,54 +33,40 @@ export default function ModalConfirmacao({
 }: ConfirmModalProps) {
     return (
         <Modal show={isOpen} onHide={onCancel} centered size="sm">
-            <Modal.Body>
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-12 text-center">
-                            {icon && (
-                                <div>
-                                    {icon}
-                                </div>
-                            )}
+            <Modal.Body className="px-6 pt-6 text-center">
+                <div className="space-y-3">
+                    {icon && (
+                        <div className="flex justify-center text-4xl text-red-600">
+                            {icon}
                         </div>
-                        <div className="col-12 text-center mt-2">
-                            <p className="mb-0">
-                                <b>{message}</b>
-                            </p>
-                        </div>
-                    </div>
+                    )}
+                    <p className="mb-0 font-bold text-slate-800">
+                        {message}
+                    </p>
                 </div>
             </Modal.Body>
 
-            <Modal.Footer>
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-lg-6 text-center">
-                            <Botao
-                                size="sm"
-                                label={cancelLabel}
-                                onClick={onCancel}
-                                disabled={false}
-                                loading={false}
-                                variant="primary"
-                                type="button"
-                                className="w-100"
-                            />
-                        </div>
-                        <div className="col-lg-6 text-center">
-                            <Botao
-                                size="sm"
-                                label={confirmLabel}
-                                onClick={onConfirm}
-                                disabled={false}
-                                loading={false}
-                                variant="danger"
-                                type="button"
-                                className="w-100"
-                            />
-                        </div>
-                    </div>
-                </div>
+            <Modal.Footer className="grid grid-cols-1 gap-2 border-0 px-6 pb-6 pt-4 sm:grid-cols-2">
+                <Botao
+                    size="sm"
+                    label={cancelLabel}
+                    onClick={onCancel}
+                    disabled={false}
+                    loading={false}
+                    variant="primary"
+                    type="button"
+                    className="w-full"
+                />
+                <Botao
+                    size="sm"
+                    label={confirmLabel}
+                    onClick={onConfirm}
+                    disabled={false}
+                    loading={false}
+                    variant="danger"
+                    type="button"
+                    className="w-full"
+                />
             </Modal.Footer>
         </Modal>
     );

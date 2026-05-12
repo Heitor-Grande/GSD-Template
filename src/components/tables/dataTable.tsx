@@ -118,6 +118,16 @@ export function TabelaDados<T extends Record<string, unknown>>({
         setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1));
     }
 
+    function obterClasseAlinhamento(alinhamento: ColunaTabelaDados<T>["alinhamento"]) {
+        const classes = {
+            start: "text-left",
+            center: "text-center",
+            end: "text-right",
+        };
+
+        return classes[alinhamento || "start"];
+    }
+
     /**
      * Exporta todos os dados filtrados da tabela para um arquivo Excel.
      * Use apenas valores brutos das colunas para manter a planilha simples e reaproveitavel.
@@ -140,15 +150,15 @@ export function TabelaDados<T extends Record<string, unknown>>({
     }
 
     return (
-        <div className="data-table-card">
-            <div className="data-table-toolbar">
-                <div className="input-group data-table-filter">
-                    <span className="input-group-text">
+        <div className="w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <div className="flex flex-col gap-3 border-b border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-end">
+                <div className="flex w-full max-w-md overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm">
+                    <span className="inline-flex items-center justify-center border-r border-slate-200 bg-slate-50 px-3 text-slate-500">
                         <FaSearch />
                     </span>
                     <input
                         type="search"
-                        className="form-control"
+                        className="min-h-10 w-full border-0 px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
                         placeholder={placeholderFiltro}
                         value={textoFiltro}
                         onChange={(event) => atualizarTextoFiltro(event.target.value)}
@@ -159,7 +169,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                 {usaExcel && (
                     <button
                         type="button"
-                        className=" ms-1 btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2"
+                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-emerald-600 bg-white px-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
                         onClick={exportarDadosExcel}
                         disabled={carregando || dadosFiltrados.length === 0}
                     >
@@ -169,14 +179,14 @@ export function TabelaDados<T extends Record<string, unknown>>({
                 )}
             </div>
 
-            <div className="data-table-scroll">
-                <table className="table data-table align-middle mb-0">
+            <div className="overflow-x-auto">
+                <table className="w-full min-w-[42rem] border-collapse text-sm">
                     <thead>
                         <tr>
                             {colunas.map((coluna) => (
                                 <th
                                     key={String(coluna.chave)}
-                                    className={`text-${coluna.alinhamento || "start"}`}
+                                    className={`${obterClasseAlinhamento(coluna.alinhamento)} whitespace-nowrap border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-bold uppercase text-slate-700`}
                                 >
                                     {coluna.titulo}
                                 </th>
@@ -187,8 +197,8 @@ export function TabelaDados<T extends Record<string, unknown>>({
                     <tbody>
                         {carregando && (
                             <tr>
-                                <td colSpan={colunas.length} className="text-center py-5">
-                                    <span className="spinner-border spinner-border-sm me-2" />
+                                <td colSpan={colunas.length} className="px-4 py-12 text-center text-slate-600">
+                                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600 align-[-2px]" />
                                     Carregando registros...
                                 </td>
                             </tr>
@@ -196,7 +206,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
 
                         {!carregando && dados.length === 0 && (
                             <tr>
-                                <td colSpan={colunas.length} className="text-center text-muted py-5">
+                                <td colSpan={colunas.length} className="px-4 py-12 text-center text-slate-500">
                                     {mensagemSemDados}
                                 </td>
                             </tr>
@@ -204,7 +214,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
 
                         {!carregando && dados.length > 0 && dadosFiltrados.length === 0 && (
                             <tr>
-                                <td colSpan={colunas.length} className="text-center text-muted py-5">
+                                <td colSpan={colunas.length} className="px-4 py-12 text-center text-slate-500">
                                     Nenhum registro encontrado para o filtro informado.
                                 </td>
                             </tr>
@@ -217,7 +227,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                             return (
                                 <tr
                                     key={String(item.id || indiceRegistro)}
-                                    className={linhaClicavel ? "data-table-row-clickable" : undefined}
+                                    className={linhaClicavel ? "cursor-pointer transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-500" : "hover:bg-slate-50"}
                                     onClick={linhaClicavel ? () => aoClicarLinha?.(obterIdLinha(item)) : undefined}
                                     tabIndex={linhaClicavel ? 0 : undefined}
                                     role={linhaClicavel ? "button" : undefined}
@@ -233,7 +243,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                                 {colunas.map((coluna) => (
                                     <td
                                         key={`${String(item.id || indiceRegistro)}-${String(coluna.chave)}`}
-                                        className={`text-${coluna.alinhamento || "start"}`}
+                                        className={`${obterClasseAlinhamento(coluna.alinhamento)} whitespace-nowrap border-b border-slate-100 px-4 py-3 text-slate-800`}
                                     >
                                         {obterValorCelula(item, coluna)}
                                     </td>
@@ -246,15 +256,15 @@ export function TabelaDados<T extends Record<string, unknown>>({
             </div>
 
             {!carregando && dadosFiltrados.length > 0 && (
-                <div className="data-table-pagination">
+                <div className="flex flex-col gap-3 border-t border-slate-200 bg-white p-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
                     <span>
                         Página {paginaAtualLimitada} de {totalPaginas}
                     </span>
 
-                    <div className="btn-group btn-group-sm">
+                    <div className="grid grid-cols-2 gap-2 sm:inline-flex">
                         <button
                             type="button"
-                            className="btn btn-outline-secondary"
+                            className="rounded-lg border border-slate-300 bg-white px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                             onClick={irParaPaginaAnterior}
                             disabled={paginaAtualLimitada === 1}
                         >
@@ -262,7 +272,7 @@ export function TabelaDados<T extends Record<string, unknown>>({
                         </button>
                         <button
                             type="button"
-                            className="btn btn-outline-secondary"
+                            className="rounded-lg border border-slate-300 bg-white px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                             onClick={irParaProximaPagina}
                             disabled={paginaAtualLimitada === totalPaginas}
                         >

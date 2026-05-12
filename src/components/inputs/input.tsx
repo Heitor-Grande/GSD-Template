@@ -13,7 +13,7 @@ interface InputProps {
     required: boolean;
     className: string;
     helpText?: string;
-    classNameHelpText?: "form-text text-muted" | "form-text text-danger";
+    classNameHelpText?: string;
     classNameInput?: string;
     labelVisivel?: boolean;
 };
@@ -33,15 +33,15 @@ export function CampoTexto({
     required,
     className,
     helpText,
-    classNameHelpText,
-    classNameInput = "form-control",
+    classNameHelpText = "mt-1 block text-sm text-slate-500",
+    classNameInput = "mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500",
     labelVisivel = true,
 }: InputProps) {
     return (
-        <div className={`form-group ${className}`}>
+        <div className={className}>
 
             {labelVisivel && (
-                <label htmlFor={id}>
+                <label htmlFor={id} className="block text-sm font-semibold text-slate-700">
                     {label}
                 </label>
             )}

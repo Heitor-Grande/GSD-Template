@@ -1,6 +1,5 @@
 "use client";
 
-import { Button as BotaoBootstrap } from "react-bootstrap";
 import { ReactNode } from "react";
 
 type ButtonProps = {
@@ -34,21 +33,45 @@ export function Botao({
     className,
     ariaLabel,
 }: ButtonProps) {
+    const classesPorTamanho = {
+        sm: "min-h-9 px-3 py-2 text-sm",
+        lg: "min-h-12 px-5 py-3 text-base",
+    };
+
+    const classesPorVariacao: Record<string, string> = {
+        primary: "border-blue-600 bg-blue-600 text-white shadow-sm hover:border-blue-700 hover:bg-blue-700",
+        "outline-primary": "border-blue-600 bg-white text-blue-700 hover:border-blue-700 hover:bg-blue-700 hover:text-white",
+        secondary: "border-slate-600 bg-slate-600 text-white hover:bg-slate-700",
+        "outline-secondary": "border-slate-300 bg-white text-slate-700 hover:border-slate-700 hover:bg-slate-700 hover:text-white",
+        danger: "border-red-600 bg-red-600 text-white shadow-sm hover:border-red-700 hover:bg-red-700",
+        "outline-danger": "border-red-500 bg-white text-red-700 hover:border-red-700 hover:bg-red-700 hover:text-white",
+        success: "border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700",
+        "outline-success": "border-emerald-600 bg-white text-emerald-700 hover:border-emerald-700 hover:bg-emerald-700 hover:text-white",
+        link: "border-transparent bg-transparent text-blue-700 shadow-none hover:bg-blue-700 hover:text-white",
+    };
+
+    const classesBase = [
+        "inline-flex cursor-pointer items-center justify-center rounded-lg border font-semibold leading-none transition",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+        classesPorTamanho[size],
+        classesPorVariacao[variant] ?? classesPorVariacao.primary,
+        className,
+    ].filter(Boolean).join(" ");
+
     return (
-        <BotaoBootstrap
-            size={size}
-            variant={variant}
+        <button
             onClick={onClick}
             disabled={disabled || loading}
             type={type}
-            className={className}
+            className={classesBase}
             aria-label={ariaLabel}
         >
-            <span className="d-inline-flex align-items-center justify-content-center gap-2 w-100">
-                {icon && <span className="d-inline-flex align-items-center">{icon}</span>}
+            <span className="inline-flex w-full items-center justify-center gap-2">
+                {icon && <span className="inline-flex items-center">{icon}</span>}
                 {label && <span>{label}</span>}
-                {iconRight && <span className="d-inline-flex align-items-center ms-auto">{iconRight}</span>}
+                {iconRight && <span className="ml-auto inline-flex items-center">{iconRight}</span>}
             </span>
-        </BotaoBootstrap>
+        </button>
     );
 }

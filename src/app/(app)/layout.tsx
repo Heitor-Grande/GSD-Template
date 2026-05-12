@@ -10,10 +10,10 @@ export default function LayoutAreaAutenticada({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="app-with-sidebar">
+        <div className="min-h-screen bg-[#f4f7fb]">
             <BarraLateral />
 
-            <main className="app-main-content">
+            <main className="min-h-screen px-4 pb-8 pt-20 lg:px-8">
                 {children}
             </main>
         </div>

@@ -7,7 +7,6 @@ import { ModalCarregamento } from "@/components/modals/loading";
 import ModalResposta from "@/components/modals/responseModal";
 import { requisitarAPI } from "@/utils/api";
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
 
 type DadosMinhaConta = {
@@ -195,13 +194,13 @@ export default function PaginaMinhaConta() {
     }, [carregarDadosMinhaConta]);
 
     return (
-        <div className="container-fluid">
-            <div className="page-header">
-                <div className="card w-100">
-                    <div className="card-body">
-                        <h5 className="mb-1">Minha conta</h5>
-                        <hr />
-                        <p className="text-muted mb-0">
+        <div className="w-full">
+            <div className="mb-6">
+                <div className="w-full rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div className="p-6">
+                        <h5 className="mb-1 text-lg font-bold text-slate-900">Minha conta</h5>
+                        <hr className="my-4 border-slate-200" />
+                        <p className="mb-0 text-slate-500">
                             Atualize as informações básicas da conta vinculada ao usuário autenticado.
                         </p>
                     </div>
@@ -209,11 +208,11 @@ export default function PaginaMinhaConta() {
             </div>
 
             <form onSubmit={salvarDadosMinhaConta}>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="row g-3">
+                <div className="rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div className="p-6">
+                        <div className="grid gap-4 md:grid-cols-12">
 
-                            <div className="col-md-4">
+                            <div className="md:col-span-4">
                                 <CampoTexto
                                     id="minha-conta-nome"
                                     label="Nome"
@@ -227,7 +226,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-4">
+                            <div className="md:col-span-4">
                                 <CampoTexto
                                     id="minha-conta-email"
                                     label="E-mail"
@@ -241,7 +240,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-4">
+                            <div className="md:col-span-4">
                                 <Seletor
                                     id="minha-conta-perfil"
                                     label="Perfil"
@@ -255,7 +254,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-telefone"
                                     label="Telefone"
@@ -269,7 +268,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-documento"
                                     label="Documento"
@@ -284,7 +283,7 @@ export default function PaginaMinhaConta() {
                             </div>
 
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-senha"
                                     label="Nova senha"
@@ -296,11 +295,11 @@ export default function PaginaMinhaConta() {
                                     required={false}
                                     className="mb-0"
                                     helpText="Preencha apenas se quiser alterar a senha atual."
-                                    classNameHelpText="form-text text-muted"
+                                    classNameHelpText="mt-1 block text-sm text-slate-500"
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-confirmar-senha"
                                     label="Confirmar nova senha"
@@ -314,7 +313,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-criado-em"
                                     label="Criado em"
@@ -328,7 +327,7 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="minha-conta-atualizado-em"
                                     label="Atualizado em"
@@ -342,30 +341,36 @@ export default function PaginaMinhaConta() {
                                 />
                             </div>
 
-                            <div className="col-md-6">
-                                <Form.Check
-                                    id="minha-conta-ativo"
-                                    type="switch"
-                                    label="Usuário ativo"
-                                    checked={formulario.ativo}
-                                    disabled={carregando}
-                                    onChange={(event) => atualizarCampoFormulario("ativo", event.target.checked)}
-                                />
+                            <div className="md:col-span-6">
+                                <label className="flex items-center gap-3 text-sm font-semibold text-slate-700" htmlFor="minha-conta-ativo">
+                                    <input
+                                        id="minha-conta-ativo"
+                                        type="checkbox"
+                                        checked={formulario.ativo}
+                                        disabled={carregando}
+                                        onChange={(event) => atualizarCampoFormulario("ativo", event.target.checked)}
+                                        className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                                    />
+                                    Usuário ativo
+                                </label>
                             </div>
 
-                            <div className="col-md-6">
-                                <Form.Check
-                                    id="minha-conta-admin"
-                                    type="switch"
-                                    label="Administrador"
-                                    checked={formulario.isAdmin}
-                                    disabled
-                                    onChange={(event) => atualizarCampoFormulario("isAdmin", event.target.checked)}
-                                />
+                            <div className="md:col-span-6">
+                                <label className="flex items-center gap-3 text-sm font-semibold text-slate-700" htmlFor="minha-conta-admin">
+                                    <input
+                                        id="minha-conta-admin"
+                                        type="checkbox"
+                                        checked={formulario.isAdmin}
+                                        disabled
+                                        onChange={(event) => atualizarCampoFormulario("isAdmin", event.target.checked)}
+                                        className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                                    />
+                                    Administrador
+                                </label>
                             </div>
                         </div>
-                        <hr />
-                        <div className="text-end">
+                        <hr className="my-4 border-slate-200" />
+                        <div className="flex justify-end">
                             <Botao
                                 size="sm"
                                 label="Salvar alterações"

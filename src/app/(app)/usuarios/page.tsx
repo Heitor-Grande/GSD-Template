@@ -52,7 +52,7 @@ export default function PaginaUsuarios() {
             chave: "ativo",
             titulo: "Status",
             renderizar: (usuario) => (
-                <span className={`badge ${usuario.ativo ? "text-bg-success" : "text-bg-secondary"}`}>
+                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${usuario.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-700"}`}>
                     {usuario.ativo ? "Ativo" : "Inativo"}
                 </span>
             ),
@@ -109,21 +109,21 @@ export default function PaginaUsuarios() {
     }
 
     return (
-        <div className="container-fluid">
-            <div className="page-header">
-                <div className="card w-100">
-                    <div className="card-body">
-                        <h5 className="">Usuários</h5>
-                        <hr />
+        <div className="w-full">
+            <div className="mb-6">
+                <div className="w-full rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div className="p-6">
+                        <h5 className="text-lg font-bold text-slate-900">Usuários</h5>
+                        <hr className="my-4 border-slate-200" />
 
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-lg-10 col-md-3 col-sm">
-                                    <p className="text-muted mb-0">
+                        <div className="w-full">
+                            <div className="grid gap-4 md:grid-cols-12 md:items-center">
+                                <div className="md:col-span-8 lg:col-span-10">
+                                    <p className="mb-0 text-slate-500">
                                         Consulte os usuários cadastrados na aplicação.
                                     </p>
                                 </div>
-                                <div className="col-lg-2 col-md-3 col-sm">
+                                <div className="md:col-span-4 lg:col-span-2">
                                     <Botao
                                         size="sm"
                                         label="Novo usuário"
@@ -136,7 +136,7 @@ export default function PaginaUsuarios() {
                                         loading={carregando}
                                         variant="outline-primary"
                                         type="button"
-                                        className="w-100"
+                                        className="w-full"
                                     />
                                 </div>
                             </div>

@@ -330,15 +330,15 @@ export default function ModalCadastroPerfil({
         <>
             <Modal show={aberto} onHide={fecharModalCadastroPerfil} centered size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title className="fs-5">
+                    <Modal.Title className="text-lg font-bold">
                         {estaEditandoPerfil ? "Perfil" : "Novo perfil"}
                     </Modal.Title>
                 </Modal.Header>
 
                 <form onSubmit={salvarPerfil}>
                     <Modal.Body>
-                        <div className="row g-3">
-                            <div className="col-md-6">
+                        <div className="grid gap-4 md:grid-cols-12">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="perfil-nome"
                                     label="Nome do perfil"
@@ -352,7 +352,7 @@ export default function ModalCadastroPerfil({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="perfil-descricao"
                                     label="Descrição"
@@ -366,30 +366,30 @@ export default function ModalCadastroPerfil({
                                 />
                             </div>
 
-                            <div className="col-12">
-                                <div className="form-check form-switch">
+                            <div className="md:col-span-12">
+                                <div className="flex items-center gap-3">
                                     <input
                                         id="perfil-ativo"
-                                        className="form-check-input"
+                                        className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
                                         type="checkbox"
                                         checked={formulario.ativo}
                                         disabled={carregando}
                                         onChange={(event) => atualizarCampoFormulario("ativo", event.target.checked)}
                                     />
-                                    <label className="form-check-label" htmlFor="perfil-ativo">
+                                    <label className="text-sm font-semibold text-slate-700" htmlFor="perfil-ativo">
                                         Perfil ativo
                                     </label>
                                 </div>
                             </div>
 
-                            <div className="col-12">
-                                <div className="table-responsive border rounded">
-                                    <table className="table align-middle mb-0">
+                            <div className="md:col-span-12">
+                                <div className="overflow-x-auto rounded-lg border border-slate-200">
+                                    <table className="w-full min-w-[38rem] border-collapse text-sm">
                                         <thead>
                                             <tr>
                                                 <th>Recurso</th>
                                                 {acoesPermissao.map((acao) => (
-                                                    <th key={acao.chave} className="text-center">
+                                                    <th key={acao.chave} className="bg-slate-50 px-3 py-3 text-center text-xs font-bold uppercase text-slate-700">
                                                         {acao.titulo}
                                                     </th>
                                                 ))}
@@ -398,12 +398,12 @@ export default function ModalCadastroPerfil({
                                         <tbody>
                                             {recursosPermissao.map((recurso) => (
                                                 <tr key={recurso.chave}>
-                                                    <td className="fw-semibold">{recurso.titulo}</td>
+                                                    <td className="border-t border-slate-100 px-3 py-3 font-semibold text-slate-800">{recurso.titulo}</td>
                                                     {acoesPermissao.map((acao) => (
-                                                        <td key={`${recurso.chave}-${acao.chave}`} className="text-center">
+                                                        <td key={`${recurso.chave}-${acao.chave}`} className="border-t border-slate-100 px-3 py-3 text-center">
                                                             <input
                                                                 id={`perfil-${recurso.chave}-${acao.chave}`}
-                                                                className="form-check-input"
+                                                                className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
                                                                 type="checkbox"
                                                                 checked={formulario.permissoes[recurso.chave][acao.chave]}
                                                                 disabled={carregando}
@@ -436,7 +436,7 @@ export default function ModalCadastroPerfil({
                                 loading={false}
                                 variant="outline-danger"
                                 type="button"
-                                className="me-auto"
+                                className="mr-auto"
                             />
                         )}
 
@@ -470,7 +470,7 @@ export default function ModalCadastroPerfil({
             <ModalConfirmacao
                 isOpen={modalConfirmacaoExclusaoAberto}
                 message="Deseja realmente excluir este perfil?"
-                icon={<FaExclamationTriangle className="text-danger fs-1" />}
+                icon={<FaExclamationTriangle className="text-4xl text-red-600" />}
                 onConfirm={deletarPerfil}
                 onCancel={() => setModalConfirmacaoExclusaoAberto(false)}
                 confirmLabel="Excluir"

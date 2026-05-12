@@ -309,15 +309,15 @@ export default function ModalCadastroUsuario({
         <>
             <Modal show={aberto} onHide={fecharModalCadastroUsuario} centered size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title className="fs-5">
+                    <Modal.Title className="text-lg font-bold">
                         {estaVisualizandoUsuario ? "Usuário" : "Novo usuário"}
                     </Modal.Title>
                 </Modal.Header>
 
                 <form onSubmit={cadastrarUsuario}>
                     <Modal.Body>
-                        <div className="row g-3">
-                            <div className="col-md-6">
+                        <div className="grid gap-4 md:grid-cols-12">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-nome"
                                     label="Nome"
@@ -331,7 +331,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-email"
                                     label="E-mail"
@@ -345,7 +345,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-telefone"
                                     label="Telefone"
@@ -359,7 +359,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-documento"
                                     label="Documento"
@@ -373,7 +373,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <Seletor
                                     id="usuario-perfil"
                                     label="Perfil"
@@ -387,39 +387,39 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-3">
-                                <div className="form-check form-switch mt-4">
+                            <div className="md:col-span-3">
+                                <div className="mt-7 flex items-center gap-3">
                                     <input
                                         id="usuario-ativo"
-                                        className="form-check-input"
+                                        className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
                                         type="checkbox"
                                         checked={formulario.ativo}
                                         disabled={carregando}
                                         onChange={(event) => atualizarCampoFormulario("ativo", event.target.checked)}
                                     />
-                                    <label className="form-check-label" htmlFor="usuario-ativo">
+                                    <label className="text-sm font-semibold text-slate-700" htmlFor="usuario-ativo">
                                         Usuário ativo
                                     </label>
                                 </div>
                             </div>
 
-                            <div className="col-md-3">
-                                <div className="form-check form-switch mt-4">
+                            <div className="md:col-span-3">
+                                <div className="mt-7 flex items-center gap-3">
                                     <input
                                         id="usuario-admin"
-                                        className="form-check-input"
+                                        className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
                                         type="checkbox"
                                         checked={formulario.isAdmin}
                                         disabled={carregando}
                                         onChange={(event) => atualizarCampoFormulario("isAdmin", event.target.checked)}
                                     />
-                                    <label className="form-check-label" htmlFor="usuario-admin">
+                                    <label className="text-sm font-semibold text-slate-700" htmlFor="usuario-admin">
                                         Administrador
                                     </label>
                                 </div>
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-criado-em"
                                     label="Criado em"
@@ -433,7 +433,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-atualizado-em"
                                     label="Atualizado em"
@@ -447,7 +447,7 @@ export default function ModalCadastroUsuario({
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-senha"
                                     label={estaVisualizandoUsuario ? "Nova senha" : "Senha"}
@@ -459,11 +459,11 @@ export default function ModalCadastroUsuario({
                                     required={!estaVisualizandoUsuario}
                                     className="mb-0"
                                     helpText="A senha deve ter pelo menos 6 caracteres."
-                                    classNameHelpText="form-text text-muted"
+                                    classNameHelpText="mt-1 block text-sm text-slate-500"
                                 />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="md:col-span-6">
                                 <CampoTexto
                                     id="usuario-confirmar-senha"
                                     label={estaVisualizandoUsuario ? "Confirmar nova senha" : "Confirmar senha"}
@@ -490,7 +490,7 @@ export default function ModalCadastroUsuario({
                                 loading={false}
                                 variant="outline-danger"
                                 type="button"
-                                className="me-auto"
+                                className="mr-auto"
                             />
                         )}
 
@@ -524,7 +524,7 @@ export default function ModalCadastroUsuario({
             <ModalConfirmacao
                 isOpen={modalConfirmacaoExclusaoAberto}
                 message="Deseja realmente excluir este usuário?"
-                icon={<FaExclamationTriangle className="text-danger fs-1" />}
+                icon={<FaExclamationTriangle className="text-4xl text-red-600" />}
                 onConfirm={deletarUsuario}
                 onCancel={() => setModalConfirmacaoExclusaoAberto(false)}
                 confirmLabel="Excluir"

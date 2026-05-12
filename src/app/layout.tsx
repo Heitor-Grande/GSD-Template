@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "./cssGlobal.css";
 
 export const metadata: Metadata = {
@@ -19,10 +18,10 @@ export default function LayoutRaiz({
   return (
     <html lang="pt-br" data-scroll-behavior="smooth">
       <body>
-        <div className="d-flex">
+        <div className="flex">
 
           {/* Conteudo dinamico da rota atual. */}
-          <main className="flex-grow-1 p-0">
+          <main className="min-w-0 flex-1 p-0">
             {children}
           </main>
 
