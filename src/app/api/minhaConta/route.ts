@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
 import { criarHash } from "@/utils/criptografia";
@@ -115,6 +116,29 @@ export async function PUT(request: NextRequest) {
 
         const senhaCriptografada = senha ? criarHash(senha) : null;
 
+        const resultadoUsuarioAntes = await consultarBancoDados<UsuarioMinhaConta>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [idUsuario]
+        );
+        const usuarioAntes = resultadoUsuarioAntes.rows[0];
+
         const resultado = await consultarBancoDados(
             `
                 update usuarios
@@ -145,6 +169,38 @@ export async function PUT(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Usuário não encontrado.", null, 404);
         }
+
+        const resultadoUsuarioDepois = await consultarBancoDados<UsuarioMinhaConta>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [idUsuario]
+        );
+
+        await registrarAuditoria({
+            acao: "ATUALIZAR",
+            usuarioId: idUsuario,
+            empresaId: null,
+            dadosAntes: usuarioAntes ?? null,
+            dadosDepois: resultadoUsuarioDepois.rows[0] ?? null,
+            metodoHttp: "PUT",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Dados da conta atualizados com sucesso.", null);
     } catch (erro) {

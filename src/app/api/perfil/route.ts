@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
 import { verificarPermissaoAPI } from "@/utils/permissoes";
@@ -186,7 +187,7 @@ export async function POST(request: NextRequest) {
             return criarRespostaApi(false, "Informe permissões válidas para o perfil.", null, 400);
         }
 
-        await consultarBancoDados(
+        const resultado = await consultarBancoDados<PerfilDetalhado>(
             `
                 insert into perfil (
                     nome,
@@ -194,6 +195,14 @@ export async function POST(request: NextRequest) {
                     permissoes
                 )
                 values ($1, $2, $3)
+                returning
+                    id,
+                    nome,
+                    descricao,
+                    ativo,
+                    permissoes,
+                    criado_em,
+                    atualizado_em
             `,
             [
                 nome,
@@ -201,6 +210,16 @@ export async function POST(request: NextRequest) {
                 JSON.stringify(body.permissoes),
             ]
         );
+
+        await registrarAuditoria({
+            acao: "CRIAR",
+            usuarioId: idUsuario,
+            empresaId: null,
+            dadosAntes: null,
+            dadosDepois: resultado.rows[0] ?? null,
+            metodoHttp: "POST",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Perfil cadastrado com sucesso.", null, 201);
     } catch (erro) {
@@ -257,6 +276,24 @@ export async function PUT(request: NextRequest) {
             return criarRespostaApi(false, "Informe permissões válidas para o perfil.", null, 400);
         }
 
+        const resultadoPerfilAntes = await consultarBancoDados<PerfilDetalhado>(
+            `
+                select
+                    id,
+                    nome,
+                    descricao,
+                    ativo,
+                    permissoes,
+                    criado_em,
+                    atualizado_em
+                from perfil
+                where id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const perfilAntes = resultadoPerfilAntes.rows[0];
+
         const resultado = await consultarBancoDados<PerfilListado>(
             `
                 update perfil
@@ -281,6 +318,33 @@ export async function PUT(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Perfil não encontrado.", null, 404);
         }
+
+        const resultadoPerfilDepois = await consultarBancoDados<PerfilDetalhado>(
+            `
+                select
+                    id,
+                    nome,
+                    descricao,
+                    ativo,
+                    permissoes,
+                    criado_em,
+                    atualizado_em
+                from perfil
+                where id = $1
+                limit 1
+            `,
+            [id]
+        );
+
+        await registrarAuditoria({
+            acao: "ATUALIZAR",
+            usuarioId: idUsuario,
+            empresaId: null,
+            dadosAntes: perfilAntes ?? null,
+            dadosDepois: resultadoPerfilDepois.rows[0] ?? null,
+            metodoHttp: "PUT",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Perfil atualizado com sucesso.", null);
     } catch (erro) {
@@ -338,6 +402,24 @@ export async function DELETE(request: NextRequest) {
             return criarRespostaApi(false, "Não é possível excluir um perfil vinculado a usuários.", null, 409);
         }
 
+        const resultadoPerfilAntes = await consultarBancoDados<PerfilDetalhado>(
+            `
+                select
+                    id,
+                    nome,
+                    descricao,
+                    ativo,
+                    permissoes,
+                    criado_em,
+                    atualizado_em
+                from perfil
+                where id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const perfilAntes = resultadoPerfilAntes.rows[0];
+
         const resultado = await consultarBancoDados<PerfilListado>(
             `
                 delete from perfil
@@ -350,6 +432,16 @@ export async function DELETE(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Perfil não encontrado.", null, 404);
         }
+
+        await registrarAuditoria({
+            acao: "EXCLUIR",
+            usuarioId: idUsuario,
+            empresaId: null,
+            dadosAntes: perfilAntes ?? null,
+            dadosDepois: null,
+            metodoHttp: "DELETE",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Perfil excluído com sucesso.", null);
     } catch {

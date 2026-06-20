@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
 import { verificarPermissaoAPI } from "@/utils/permissoes";
@@ -182,6 +183,28 @@ export async function DELETE(request: NextRequest) {
             return criarRespostaApi(false, "Informe uma empresa válida para exclusão.", null, 400);
         }
 
+        const resultadoEmpresaAntes = await consultarBancoDados<EmpresaListada>(
+            `
+                select
+                    e.id,
+                    e.fantasia,
+                    e.cnpj,
+                    e.email,
+                    e.telefone,
+                    e.superior_id,
+                    superior.fantasia as superior_fantasia,
+                    e.ativo,
+                    e.criado_em,
+                    e.atualizado_em
+                from empresas e
+                left join empresas superior on superior.id = e.superior_id
+                where e.id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const empresaAntes = resultadoEmpresaAntes.rows[0];
+
         const resultado = await consultarBancoDados<EmpresaListada>(
             `
                 with vinculos_removidos as (
@@ -207,6 +230,16 @@ export async function DELETE(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Empresa não encontrada.", null, 404);
         }
+
+        await registrarAuditoria({
+            acao: "EXCLUIR",
+            usuarioId: idUsuario,
+            empresaId: null,
+            dadosAntes: empresaAntes ?? resultado.rows[0],
+            dadosDepois: null,
+            metodoHttp: "DELETE",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Empresa excluída com sucesso.", null);
     } catch {
@@ -468,6 +501,16 @@ export async function POST(request: NextRequest) {
             [idUsuario, resultado.rows[0].id, idUsuario]
         );
 
+        await registrarAuditoria({
+            acao: "CRIAR",
+            usuarioId: idUsuario,
+            empresaId: resultado.rows[0].id,
+            dadosAntes: null,
+            dadosDepois: resultado.rows[0],
+            metodoHttp: "POST",
+            rota: request.nextUrl.pathname,
+        });
+
         return criarRespostaApi(true, "Empresa cadastrada com sucesso.", resultado.rows[0], 201);
     } catch (erro) {
         if (erro instanceof SyntaxError) {
@@ -539,6 +582,28 @@ export async function PUT(request: NextRequest) {
             return criarRespostaApi(false, "Informe uma empresa superior válida.", null, 400);
         }
 
+        const resultadoEmpresaAntes = await consultarBancoDados<EmpresaListada>(
+            `
+                select
+                    e.id,
+                    e.fantasia,
+                    e.cnpj,
+                    e.email,
+                    e.telefone,
+                    e.superior_id,
+                    superior.fantasia as superior_fantasia,
+                    e.ativo,
+                    e.criado_em,
+                    e.atualizado_em
+                from empresas e
+                left join empresas superior on superior.id = e.superior_id
+                where e.id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const empresaAntes = resultadoEmpresaAntes.rows[0];
+
         const resultado = await consultarBancoDados<EmpresaListada>(
             `
                 update empresas
@@ -569,6 +634,16 @@ export async function PUT(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Empresa não encontrada.", null, 404);
         }
+
+        await registrarAuditoria({
+            acao: "ATUALIZAR",
+            usuarioId: idUsuario,
+            empresaId: id,
+            dadosAntes: empresaAntes ?? null,
+            dadosDepois: resultado.rows[0],
+            metodoHttp: "PUT",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Empresa atualizada com sucesso.", resultado.rows[0]);
     } catch (erro) {

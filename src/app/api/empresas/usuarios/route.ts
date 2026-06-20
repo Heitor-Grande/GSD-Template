@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
 import { verificarPermissaoAPI } from "@/utils/permissoes";
@@ -41,6 +42,11 @@ type VinculoRemovido = {
     id: number;
     usuario_id: number;
     empresa_id: number;
+};
+
+type VinculoUsuarioEmpresaCriado = VinculoRemovido & {
+    criado_por: number | null;
+    criado_em: Date;
 };
 
 type VinculoUsuarioEmpresaBody = {
@@ -288,7 +294,7 @@ export async function POST(request: NextRequest) {
             return criarRespostaApi(false, "Este usuário já está vinculado à empresa.", null, 409);
         }
 
-        await consultarBancoDados(
+        const resultadoVinculoCriado = await consultarBancoDados<VinculoUsuarioEmpresaCriado>(
             `
                 insert into usuarios_empresas (
                     usuario_id,
@@ -296,6 +302,12 @@ export async function POST(request: NextRequest) {
                     criado_por
                 )
                 values ($1, $2, $3)
+                returning
+                    id,
+                    usuario_id,
+                    empresa_id,
+                    criado_por,
+                    criado_em
             `,
             [usuarioId, empresaId, idUsuarioAutenticado]
         );
@@ -310,6 +322,16 @@ export async function POST(request: NextRequest) {
             `,
             [empresaId, usuarioId]
         );
+
+        await registrarAuditoria({
+            acao: "CRIAR",
+            usuarioId: idUsuarioAutenticado,
+            empresaId: empresaId,
+            dadosAntes: null,
+            dadosDepois: resultadoVinculoCriado.rows[0] ?? null,
+            metodoHttp: "POST",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Vínculo criado com sucesso.", null, 201);
     } catch (erro) {
@@ -452,6 +474,20 @@ export async function DELETE(request: NextRequest) {
             return criarRespostaApi(false, "Informe um vínculo válido para remoção.", null, 400);
         }
 
+        const resultadoVinculoAntes = await consultarBancoDados<VinculoRemovido>(
+            `
+                select
+                    id,
+                    usuario_id,
+                    empresa_id
+                from usuarios_empresas
+                where id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const vinculoAntes = resultadoVinculoAntes.rows[0];
+
         const resultado = await consultarBancoDados<VinculoRemovido>(
             `
                 delete from usuarios_empresas
@@ -486,6 +522,16 @@ export async function DELETE(request: NextRequest) {
             `,
             [vinculoRemovido.usuario_id, vinculoRemovido.empresa_id]
         );
+
+        await registrarAuditoria({
+            acao: "EXCLUIR",
+            usuarioId: idUsuarioAutenticado,
+            empresaId: vinculoRemovido.empresa_id,
+            dadosAntes: vinculoAntes ?? vinculoRemovido,
+            dadosDepois: null,
+            metodoHttp: "DELETE",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Vínculo removido com sucesso.", null);
     } catch {

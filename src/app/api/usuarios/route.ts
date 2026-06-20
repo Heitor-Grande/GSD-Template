@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { enviarEmail } from "@/services/email";
 import { normalizarCampoOpcional, validarEmail, validarStringComConteudo } from "@/utils/validacoes";
@@ -335,6 +336,38 @@ export async function POST(request: NextRequest) {
             [resultadoUsuario.rows[0].id, empresaNavegacaoId, idUsuarioCriador]
         );
 
+        const resultadoUsuarioCriado = await consultarBancoDados<UsuarioDetalhado>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [resultadoUsuario.rows[0].id]
+        );
+
+        await registrarAuditoria({
+            acao: "CRIAR",
+            usuarioId: idUsuarioCriador,
+            empresaId: empresaNavegacaoId,
+            dadosAntes: null,
+            dadosDepois: resultadoUsuarioCriado.rows[0] ?? { id: resultadoUsuario.rows[0].id },
+            metodoHttp: "POST",
+            rota: request.nextUrl.pathname,
+        });
+
         const emailEnviado = await enviarEmailBoasVindasUsuario({
             nome: nome,
             email: email,
@@ -396,6 +429,10 @@ export async function PUT(request: NextRequest) {
         const documento = normalizarCampoOpcional(body.documento);
         const perfilId = normalizarPerfilId(body.perfilId);
         const ativo = typeof body.ativo === "boolean" ? body.ativo : null;
+        const empresaNavegacaoId = normalizarIdEmpresaNavegacao(body.empresaNavegacaoId);
+        const empresaAuditoriaId = Number.isInteger(empresaNavegacaoId) && empresaNavegacaoId > 0
+            ? empresaNavegacaoId
+            : null;
 
         if (!Number.isInteger(id) || id <= 0) {
             return criarRespostaApi(false, "Informe um usuário válido para atualização.", null, 400);
@@ -422,6 +459,29 @@ export async function PUT(request: NextRequest) {
         }
 
         const senhaCriptografada = senha ? criarHash(senha) : null;
+
+        const resultadoUsuarioAntes = await consultarBancoDados<UsuarioDetalhado>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const usuarioAntes = resultadoUsuarioAntes.rows[0];
 
         const resultado = await consultarBancoDados<UsuarioListado>(
             `
@@ -455,6 +515,38 @@ export async function PUT(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Usuário não encontrado.", null, 404);
         }
+
+        const resultadoUsuarioDepois = await consultarBancoDados<UsuarioDetalhado>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [id]
+        );
+
+        await registrarAuditoria({
+            acao: "ATUALIZAR",
+            usuarioId: idUsuarioAtualizacao,
+            empresaId: empresaAuditoriaId,
+            dadosAntes: usuarioAntes ?? null,
+            dadosDepois: resultadoUsuarioDepois.rows[0] ?? null,
+            metodoHttp: "PUT",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Usuário atualizado com sucesso.", null);
     } catch (erro) {
@@ -502,6 +594,29 @@ export async function DELETE(request: NextRequest) {
             return criarRespostaApi(false, "Informe um usuário válido para exclusão.", null, 400);
         }
 
+        const resultadoUsuarioAntes = await consultarBancoDados<UsuarioDetalhado>(
+            `
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    u.telefone,
+                    u.documento,
+                    u.perfil_id,
+                    p.nome as perfil_nome,
+                    u.ativo,
+                    u."isAdmin",
+                    u.criado_em,
+                    u.atualizado_em
+                from usuarios u
+                left join perfil p on p.id = u.perfil_id
+                where u.id = $1
+                limit 1
+            `,
+            [id]
+        );
+        const usuarioAntes = resultadoUsuarioAntes.rows[0];
+
         const resultado = await consultarBancoDados<UsuarioListado>(
             `
                 delete from usuarios
@@ -514,6 +629,16 @@ export async function DELETE(request: NextRequest) {
         if (!resultado.rows[0]) {
             return criarRespostaApi(false, "Usuário não encontrado.", null, 404);
         }
+
+        await registrarAuditoria({
+            acao: "EXCLUIR",
+            usuarioId: idUsuarioExclusao === id ? null : idUsuarioExclusao,
+            empresaId: null,
+            dadosAntes: usuarioAntes ?? null,
+            dadosDepois: null,
+            metodoHttp: "DELETE",
+            rota: request.nextUrl.pathname,
+        });
 
         return criarRespostaApi(true, "Usuário excluído com sucesso.", null);
     } catch (erro) {
