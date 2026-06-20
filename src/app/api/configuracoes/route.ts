@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { registrarAuditoria } from "@/lib/auditoria";
+import { registrarAuditoria } from "@/utils/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { obterIdUsuarioAutenticado } from "@/utils/autenticacao";
 import { criptografarValor, descriptografarValor } from "@/utils/criptografiaReversivel";

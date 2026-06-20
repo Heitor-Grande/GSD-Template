@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { registrarAuditoria } from "@/lib/auditoria";
+import { registrarAuditoria } from "@/utils/auditoria";
 import { consultarBancoDados } from "@/services/database";
 import { enviarEmail } from "@/services/email";
 import { normalizarCampoOpcional, validarEmail, validarStringComConteudo } from "@/utils/validacoes";
